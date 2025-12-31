@@ -17,21 +17,22 @@ app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 database_url = os.environ.get('DATABASE_URL')
 
-if database_url and database_url.strip():
-    # Fix for SQLAlchemy uri if postgres:// is used (common on Render/Heroku)
-    if database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-else:
-    # Fallback to SQLite
-    if os.environ.get("RENDER"):
-        DB_DIR = "/opt/render/project/src/instance"
-    else:
-        DB_DIR = os.path.join(BASE_DIR, "instance")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 
+if DATABASE_URL:
+    # Corrige prefixo antigo
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+else:
+    # Fallback local (somente para DEV)
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    DB_DIR = os.path.join(BASE_DIR, "instance")
     os.makedirs(DB_DIR, exist_ok=True)
-    DB_PATH = os.path.join(DB_DIR, "lottery.db")
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(DB_DIR, 'lottery.db')}"
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
@@ -109,7 +110,7 @@ def submit():
         db.session.commit()
         
         # Calculate total for redirect
-        total_val = count * 6
+        total_val = len(games_data) * 6
         return jsonify({'success': True, 'redirect': url_for('success', val=total_val)})
 
     except Exception as e:
