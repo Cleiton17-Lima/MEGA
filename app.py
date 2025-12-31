@@ -101,7 +101,10 @@ def submit():
             count += 1
 
         db.session.commit()
-        return jsonify({'success': True, 'redirect': url_for('success')})
+        
+        # Calculate total for redirect
+        total_val = count * 6
+        return jsonify({'success': True, 'redirect': url_for('success', val=total_val)})
 
     except Exception as e:
         db.session.rollback()
@@ -110,7 +113,12 @@ def submit():
 
 @app.route('/success')
 def success():
-    return render_template('success.html')
+    val = request.args.get('val', 0)
+    try:
+        val = float(val)
+    except:
+        val = 0
+    return render_template('success.html', total=val)
 
 
 @app.route('/login', methods=['GET', 'POST'])

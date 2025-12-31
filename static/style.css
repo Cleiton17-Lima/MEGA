@@ -237,6 +237,14 @@ header p {
     padding: 5px;
 }
 
+.total-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 .error-msg {
     color: var(--error);
     text-align: center;

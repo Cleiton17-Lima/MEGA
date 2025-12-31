@@ -9,7 +9,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-instance/
 .webassets-cache
 .pytest_cache/
 lottery.db

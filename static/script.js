@@ -101,6 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
             gamesList.appendChild(div);
         });
         gameCountSpan.textContent = games.length;
+
+        // Calculate Price
+        const total = games.length * 6;
+        document.getElementById('totalPrice').textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
     // Specially expose removeGame to window scope
