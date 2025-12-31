@@ -10,14 +10,20 @@ load_dotenv()
 # Initialize Flask App
 app = Flask(__name__)
 
-# Database Configuration
-# Using SQLite for simplicity as requested
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lottery.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/lottery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'dev-secret-key-change-me' # Consider moving this to env as well for prod
+app.config['SECRET_KEY'] = 'dev-secret-key-change-me'
 
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+with app.app_context():
+    db.create_all()
+    
 # Credentials
 ADMIN_USER = os.getenv('ADMIN_USER')
 ADMIN_PASS = os.getenv('ADMIN_PASS')
