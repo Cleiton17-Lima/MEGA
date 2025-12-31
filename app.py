@@ -15,17 +15,24 @@ app = Flask(__name__)
 # ==============================
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+database_url = os.environ.get('DATABASE_URL')
 
-if os.environ.get("RENDER"):
-    DB_DIR = "/opt/render/project/src/instance"
+if database_url:
+    # Fix for SQLAlchemy uri if postgres:// is used (common on Render/Heroku)
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
-    DB_DIR = os.path.join(BASE_DIR, "instance")
+    # Fallback to SQLite
+    if os.environ.get("RENDER"):
+        DB_DIR = "/opt/render/project/src/instance"
+    else:
+        DB_DIR = os.path.join(BASE_DIR, "instance")
 
-os.makedirs(DB_DIR, exist_ok=True)
+    os.makedirs(DB_DIR, exist_ok=True)
+    DB_PATH = os.path.join(DB_DIR, "lottery.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
 
-DB_PATH = os.path.join(DB_DIR, "lottery.db")
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 
