@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sucesso!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .success-box {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .pix-key {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 2px dashed #20c997;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .check-icon {
+            font-size: 4em;
+            color: #20c997;
+            margin-bottom: 20px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="success-box">
+            <span class="check-icon">✓</span>
+            <h1>Jogos Enviados com Sucesso!</h1>
+            <p>Para confirmar sua aposta, realize o pagamento via PIX.</p>
+
+            <div class="pix-container">
+                <h3>Chave PIX</h3>
+                <div class="pix-key">cleitondgk02@outlook.com</div>
+                <p>Envie o comprovante se necessário.</p>
+            </div>
+
+            <a href="{{ url_for('index') }}" class="btn primary">Voltar</a>
+        </div>
+    </div>
+</body>
+
+</html>
