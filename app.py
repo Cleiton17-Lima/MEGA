@@ -17,7 +17,7 @@ app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 database_url = os.environ.get('DATABASE_URL')
 
-if database_url:
+if database_url and database_url.strip():
     # Fix for SQLAlchemy uri if postgres:// is used (common on Render/Heroku)
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -89,15 +89,15 @@ def submit():
         if not full_name or not games_data:
             return jsonify({'success': False, 'message': 'Missing data'}), 400
 
+        # Enforce exact 5 games
+        if len(games_data) != 5:
+            return jsonify({'success': False, 'message': 'É obrigatório fazer exatamente 5 jogos.'}), 400
+
         new_user = User(full_name=full_name)
         db.session.add(new_user)
         db.session.flush()
 
-        count = 0
         for game_nums in games_data:
-            if count >= 5:
-                break
-
             if len(game_nums) != 6:
                 continue
 
@@ -105,7 +105,6 @@ def submit():
             nums_str = ",".join(map(str, sorted_nums))
 
             db.session.add(Game(numbers=nums_str, user_id=new_user.id))
-            count += 1
 
         db.session.commit()
         
